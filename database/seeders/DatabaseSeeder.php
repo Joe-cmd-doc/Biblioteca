@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Joel', // Cambia esto por tu nombre
             'email' => 'joelortizrivas@gmail.com', // Cambia esto por tu correo
             'password' => 'aa1234aa', // Cambia esto por tu contraseña
-            'role' => 'admin',
+            'is_admin' => true,
         ]);
     }
 }
