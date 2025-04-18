@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('llibres', function (Blueprint $table) {
+        Schema::create('books', function (Blueprint $table) {
             $table->id();
-            $table->string('titol', 255);
-            $table->string('autor', 255);
-            $table->integer('any_publicacio');
-            $table->text('descripcio')->nullable();
+            $table->string('title', 255);
+            $table->string('author', 255);
+            $table->integer('publication_year');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('llibres');
+        Schema::dropIfExists('books');
     }
 };

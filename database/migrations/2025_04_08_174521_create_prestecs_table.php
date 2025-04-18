@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('prestecs', function (Blueprint $table) {
+        Schema::create('loans', function (Blueprint $table) {
             $table->id();
-            $table->date('data_inci');
-            $table->date('data_final');
-            $table->foreignId('id_usuari')->constrained('users') ->onDelete('cascade');
-            $table->foreignId('id_llibre')->constrained('llibres')->onDelete('cascade');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('book_id')->constrained('books')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('prestecs');
+        Schema::dropIfExists('loans');
     }
 };
