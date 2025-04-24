@@ -11,7 +11,7 @@ class BookController extends Controller
     public function index()
     {
         $books = Book::all(); // Obtener todos los libros
-        return view('books.index', compact('books'));
+        return view('dashboard', compact('books'));
     }
 
     // Mostrar un libro específico (público)

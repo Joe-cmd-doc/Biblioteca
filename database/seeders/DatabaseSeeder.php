@@ -26,5 +26,6 @@ class DatabaseSeeder extends Seeder
             'password' => 'aa1234aa', // Cambia esto por tu contraseña
             'is_admin' => true,
         ]);
+        $this->call(BookSeeder::class);
     }
 }

@@ -27,18 +27,18 @@ class ReviewController extends Controller
     public function store(Request $request, $bookId)
     {
         $request->validate([
-            'text' => 'required|string',
-            'puntuacio' => 'required|integer|min:1|max:5',
+            'content' => 'required|string',
+            'rating' => 'required|integer|min:1|max:5',
         ]);
 
         Review::create([
-            'text' => $request->text,
-            'puntuacio' => $request->puntuacio,
-            'id_usuari' => auth()->id(),
-            'id_llibre' => $bookId,
+            'content' => $request->content,
+            'rating' => $request->rating,
+            'user_id' => auth()->id(),
+            'book_id' => $bookId,
         ]);
 
-        return redirect()->route('reviews.show', $bookId); // Redirigir a la página del libro
+        return redirect()->route('books', $bookId); // Redirigir a la página del libro
     }
 
     // Editar una reseña
@@ -58,16 +58,27 @@ class ReviewController extends Controller
 
         $review = Review::findOrFail($id);
         $review->update($request->all());
-        return redirect()->route('reviews.show', $review->id_llibre); // Redirigir a la página del libro
+        return redirect()->route('books', $review->book_id); // Redirigir a la página del libro
     }
 
-    // Eliminar una reseña
     public function destroy($id)
     {
+        // Buscar la reseña por su ID
         $review = Review::findOrFail($id);
-        $this->authorize('is_owner', $review); // Verificar que el usuario es el propietario de la reseña
+        $bookId = $review->book_id;
 
-        $review->delete(); // Eliminar la reseña
-        return redirect()->route('reviews.show', $review->id_llibre); // Redirigir a la página del libro
+        // Verificar si el usuario autenticado es el propietario de la reseña o es un administrador
+        if ($review->user_id !== auth()->id() && !auth()->user()->is_admin) {
+            // Si no es propietario ni admin, se aborta la acción con un error 403
+            abort(403, 'No tienes permiso para eliminar esta reseña.');
+        }
+
+        // Eliminar la reseña
+        $review->delete();
+
+        // Redirigir a la página del libro
+        return redirect()->route('books', $bookId); // Redirigir a la página del libro
     }
+
+
 }
