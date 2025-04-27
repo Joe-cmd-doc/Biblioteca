@@ -5,48 +5,98 @@ namespace App\Http\Controllers;
 use App\Models\Loan;
 use App\Models\Book;
 use Illuminate\Http\Request;
+use App\Models\User;
+
 
 class LoanController extends Controller
 {
-    // Mostrar los préstamos del usuario autenticado
+
     public function index()
     {
-        $loans = Loan::where('id_usuari', auth()->id())->get(); // Obtener los préstamos del usuario logueado
+        $loans = Loan::where('user_id', auth()->id())->get();
         return view('loans.index', compact('loans'));
     }
 
-    // Solicitar un préstamo
+
     public function create($bookId)
-    {
-        $book = Book::findOrFail($bookId); // Obtener el libro por ID
-        return view('loans.create', compact('book'));
-    }
+{
+    $book = Book::findOrFail($bookId);
 
-    // Guardar un préstamo
-    public function store(Request $request, $bookId)
-    {
-        $request->validate([
-            'data_inci' => 'required|date',
-            'data_final' => 'required|date',
-        ]);
 
-        Loan::create([
-            'data_inci' => $request->data_inci,
-            'data_final' => $request->data_final,
-            'id_usuari' => auth()->id(),
-            'id_llibre' => $bookId,
-        ]);
+    $loans = Loan::where('book_id', $bookId)
+                 ->where('end_date', '>=', now())
+                 ->orderBy('end_date', 'desc')
+                 ->get();
 
-        return redirect()->route('loans.index'); // Redirigir al listado de préstamos
-    }
 
-    // Devolver un libro
-    public function destroy($id)
-    {
-        $loan = Loan::findOrFail($id);
-        $this->authorize('is_owner', $loan); // Verificar que el usuario es el propietario del préstamo
+    $lastLoanEndDate = $loans->isNotEmpty() ? $loans->first()->end_date : now()->subDay()->toDateString();
 
-        $loan->delete(); // Eliminar el préstamo
-        return redirect()->route('loans.index');
-    }
+
+    $startDateMin = \Carbon\Carbon::parse($lastLoanEndDate)->addDay()->toDateString();
+
+
+    $users = User::all();
+    return view('loans.create', compact('book', 'users', 'startDateMin'));
 }
+
+
+
+
+
+public function store(Request $request)
+{
+
+    $request->validate([
+        'start_date' => 'required|date|before:end_date',
+        'end_date' => 'required|date|after:start_date',
+    ]);
+
+
+    $book = Book::findOrFail($request->book_id);
+
+
+    $existingLoan = Loan::where('book_id', $book->id)
+                        ->where(function ($query) use ($request) {
+                            $query->whereBetween('start_date', [$request->start_date, $request->end_date])
+                                  ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
+                                  ->orWhere(function ($query) use ($request) {
+                                      $query->where('start_date', '<=', $request->start_date)
+                                            ->where('end_date', '>=', $request->end_date);
+                                  });
+                        })
+                        ->exists();
+
+
+    if ($existingLoan) {
+        return redirect()->back()->withErrors(['message' => 'The book is already loaned during the selected dates.']);
+    }
+
+
+    Loan::create([
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date,
+        'book_id' => $book->id,
+        'user_id' => auth()->id(),
+    ]);
+
+    return redirect()->route('dashboard')->with('success', 'Book loaned successfully.');
+}
+
+
+
+public function destroy($id)
+{
+    $loan = Loan::findOrFail($id);
+
+    if (auth()->id() !== $loan->user_id && !auth()->user()->is_admin) {
+        return redirect()->route('loans.index')->with('error', 'You do not have permission to delete this loan.');
+    }
+
+
+    $loan->delete();
+
+    return redirect()->route('loans.index');
+}
+
+}
+

@@ -37,6 +37,14 @@
                     </div>
                 </div>
 
+                <!-- Botón de Crear Préstamo -->
+                <div class="mt-10 flex justify-end">
+                    <a href="{{ route('loans.create', ['bookId' => $book->id]) }}"
+                        class="px-6 py-3 bg-yellow-500 text-black font-semibold rounded-lg shadow-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-300">
+                        Create Loan
+                    </a>
+                </div>
+
                 <div class="mt-10">
                     <a href="/dashboard"
                        class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-md">
@@ -51,56 +59,50 @@
             <h2 class="text-3xl font-semibold text-zinc-900 dark:text-white mb-6">Reviews</h2>
 
             @forelse ($book->reviews as $review)
-    <div class="mb-8 p-6 bg-white dark:bg-zinc-800 rounded-2xl shadow-lg border border-zinc-200 dark:border-zinc-700 transition duration-300">
-        <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-2">
-                ⭐
-                <span class="text-yellow-600 font-semibold">{{ $review->rating }}/5</span>
-            </div>
-            <span class="text-xs text-gray-500 dark:text-gray-400">User #{{ $review->user_id }}</span>
-        </div>
+                <div class="mb-8 p-6 bg-white dark:bg-zinc-800 rounded-2xl shadow-lg border border-zinc-200 dark:border-zinc-700 transition duration-300">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            ⭐
+                            <span class="text-yellow-600 font-semibold">{{ $review->rating }}/5</span>
+                        </div>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">User #{{ $review->user_id }}</span>
+                    </div>
 
-        <p class="text-gray-800 dark:text-zinc-200 leading-relaxed italic mb-4">
-            "{{ $review->content }}"
-        </p>
+                    <p class="text-gray-800 dark:text-zinc-200 leading-relaxed italic mb-4">
+                        "{{ $review->content }}"
+                    </p>
 
-        <div class="flex justify-end gap-4">
-            <form action="{{ route('reviews.edit', $review->id) }}" method="GET">
+                    <div class="flex justify-end gap-4">
+                        <form action="{{ route('reviews.edit', $review->id) }}" method="GET">
+                            <button type="submit" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-black text-sm font-semibold rounded-xl transition duration-300 shadow">
+                                Edit
+                            </button>
+                        </form>
 
-            <button type="submit" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-black text-sm font-semibold rounded-xl transition duration-300 shadow">
-                Edit
-            </button>
-
-
-            </form>
-
-            <form action="{{ route('reviews.destroy', $review->id) }}" method="POST"
-                  onsubmit="return confirm('Are you sure you want to delete this review?');">
-                @csrf
-                @method('DELETE')
-                <button type="submit"
-                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl transition duration-300 shadow">
-                    Delete
-                </button>
-            </form>
-        </div>
-    </div>
+                        <form action="{{ route('reviews.destroy', $review->id) }}" method="POST"
+                              onsubmit="return confirm('Are you sure you want to delete this review?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl transition duration-300 shadow">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
             @empty
                 <p class="text-zinc-500 dark:text-zinc-400 italic text-center mt-8">There are no reviews yet.</p>
             @endforelse
-
-
 
             @auth
             <div class="mt-8 mb-24">
                 <div class="bg-white p-4 rounded-xl shadow-md text-center">
                     <a href="{{ route('reviews.create', ['bookId' => $book]) }}"
-                        class="inline-block px-6 py-3 text-black font-semibold text-lg rounded-xl border border-black hover:bg-gray-100 transition duration-300 ease-in-out">
+                       class="inline-block px-6 py-3 text-black font-semibold text-lg rounded-xl border border-black hover:bg-gray-100 transition duration-300 ease-in-out">
                         ✍️ Write a Review
                     </a>
                 </div>
             </div>
-
             @endauth
         </div>
     </section>

@@ -25,16 +25,29 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/books/{id}', [BookController::class, 'show'])->name('books');
 
-
-
+Route::middleware(['auth', 'can:is_admin'])->group(function () {
+    Route::get('/books/create', [BookController::class, 'create'])->name('books.create');
+    Route::post('/books', [BookController::class, 'store'])->name('books.store');
+});
+Route::get('/books/{id}', [BookController::class, 'show'])->name('books.show');
 Route::middleware(['auth', 'can:is_admin'])->group(function () {
     Route::resource('books', BookController::class)->except(['index', 'show']);
 });
 
 
+
+
 Route::resource('loans', LoanController::class)->middleware('auth');
+
+Route::middleware('auth')->group(function () {
+    // Rutas para préstamos
+    Route::get('/loans', [LoanController::class, 'index'])->name('loans.index');
+    Route::get('/loans/create/{bookId}', [LoanController::class, 'create'])->name('loans.create');
+    Route::post('/loans', [LoanController::class, 'store'])->name('loans.store');
+    Route::get('/loans/{loan}', [LoanController::class, 'show'])->name('loans.show');
+    Route::delete('/loans/{loan}', [LoanController::class, 'destroy'])->name('loans.destroy');
+});
 
 
 Route::resource('reviews', ReviewController::class)->middleware('auth');
@@ -42,22 +55,11 @@ Route::resource('reviews', ReviewController::class)->middleware('auth');
 require __DIR__.'/auth.php';
 
 Route::middleware(['auth'])->group(function () {
-    // Mostrar reseñas de un libro
+
     Route::get('/books/{bookId}/reviews', [ReviewController::class, 'show'])->name('reviews.show');
-
-    // Mostrar formulario para crear una nueva reseña
     Route::get('/books/{bookId}/reviews/create', [ReviewController::class, 'create'])->name('reviews.create');
-
-    // Guardar una nueva reseña
     Route::post('/books/{bookId}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-
-
-    // Editar una reseña
     Route::get('/reviews/{id}/edit', [ReviewController::class, 'edit'])->name('reviews.edit');
-
-    // Actualizar una reseña
     Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('reviews.update');
-
-    // Eliminar una reseña
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 });

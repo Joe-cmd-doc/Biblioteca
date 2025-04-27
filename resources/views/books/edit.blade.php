@@ -1,28 +1,45 @@
-@extends('layouts.app')
+<x-app-layout>
+    <div class="container mx-auto px-4 py-8">
+        <!-- Form Container -->
+        <div class="bg-white shadow-lg rounded-lg p-8 relative">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Edit Book</h1>
 
-@section('content')
-<div class="container">
-    <h1>Editar Libro</h1>
-    <form action="{{ route('books.update', $book->id) }}" method="POST">
-        @csrf
-        @method('PUT')
-        <div class="form-group">
-            <label for="titol">Título</label>
-            <input type="text" name="titol" id="titol" class="form-control" value="{{ $book->titol }}" required>
+            <!-- Form -->
+            <form action="{{ route('books.update', $book->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                <!-- Title -->
+                <div class="mb-4">
+                    <label for="title" class="block text-lg font-medium text-gray-700">Title</label>
+                    <input type="text" name="title" id="title" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" value="{{ $book->title }}" required>
+                </div>
+
+                <!-- Author -->
+                <div class="mb-4">
+                    <label for="author" class="block text-lg font-medium text-gray-700">Author</label>
+                    <input type="text" name="author" id="author" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" value="{{ $book->author }}" required>
+                </div>
+
+                <!-- Publication Year -->
+                <div class="mb-4">
+                    <label for="publication_year" class="block text-lg font-medium text-gray-700">Publication Year</label>
+                    <input type="number" name="publication_year" id="publication_year" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" value="{{ $book->publication_year }}" required>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-6">
+                    <label for="description" class="block text-lg font-medium text-gray-700">Description</label>
+                    <textarea name="description" id="description" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" rows="4">{{ $book->description }}</textarea>
+                </div>
+
+                <!-- Submit Button (Positioned Bottom Right) -->
+                <div class="absolute bottom-8 right-8">
+                    <button type="submit" class="px-8 py-4 bg-gray-400 text-black font-bold rounded-lg shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-300 transition-all duration-300">
+                        Update Book
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="form-group">
-            <label for="autor">Autor</label>
-            <input type="text" name="autor" id="autor" class="form-control" value="{{ $book->autor }}" required>
-        </div>
-        <div class="form-group">
-            <label for="any_publicacio">Año de Publicación</label>
-            <input type="number" name="any_publicacio" id="any_publicacio" class="form-control" value="{{ $book->any_publicacio }}" required>
-        </div>
-        <div class="form-group">
-            <label for="descripcio">Descripción</label>
-            <textarea name="descripcio" id="descripcio" class="form-control" rows="4">{{ $book->descripcio }}</textarea>
-        </div>
-        <button type="submit" class="btn btn-success mt-3">Actualizar Libro</button>
-    </form>
-</div>
-@endsection
+    </div>
+</x-app-layout>
