@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
+use App\Models\Review;
+
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -23,6 +25,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         Gate::define('is_admin', function ($user) {
             return $user->is_admin === 1;
+        });
+
+        Gate::define('edit-review', function ($user, Review $review) {
+            return $user->id === $review->user_id || $user->is_admin;
         });
     }
 }

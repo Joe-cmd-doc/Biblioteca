@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Review;
 use App\Models\Book;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ReviewController extends Controller
 {
@@ -43,23 +44,36 @@ class ReviewController extends Controller
 
 
     public function edit($id)
-    {
-        $review = Review::findOrFail($id);
-        return view('reviews.edit', compact('review'));
+{
+    $review = Review::findOrFail($id);
+
+    if (Gate::denies('edit-review', $review)) {
+        abort(403, 'You do not have permision.');
     }
 
+    return view('reviews.edit', compact('review'));
+}
 
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'content' => 'required|string',
-            'rating' => 'required|integer|min:1|max:5',
-        ]);
 
-        $review = Review::findOrFail($id);
-        $review->update($request->all());
-        return redirect()->route('books.show', $review->book_id);
+
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'content' => 'required|string',
+        'rating' => 'required|integer|min:1|max:5',
+    ]);
+
+    $review = Review::findOrFail($id);
+
+
+    if (Gate::denies('edit-review', $review)) {
+        abort(403, 'You do not have permision.');
     }
+
+    $review->update($request->only(['content', 'rating']));
+
+    return redirect()->route('books.show', $review->book_id);
+}
 
     public function destroy($id)
     {
@@ -68,16 +82,15 @@ class ReviewController extends Controller
         $bookId = $review->book_id;
 
 
-        if ($review->user_id !== auth()->id() && !auth()->user()->is_admin) {
-
-            abort(403, 'No tienes permiso para eliminar esta reseña.');
+        if (Gate::denies('edit-review', $review)) {
+            abort(403, 'You do not have permision.');
         }
 
 
         $review->delete();
 
 
-        return redirect()->route('books', $bookId);
+        return redirect()->route('books.show', $bookId);
     }
 
 

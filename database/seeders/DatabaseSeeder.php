@@ -19,11 +19,11 @@ class DatabaseSeeder extends Seeder
        //     'name' => 'Test User',
       //      'email' => 'test@example.com',
         //]);
-         // Crear un usuario administrador
+
          User::create([
-            'name' => 'Joel', // Cambia esto por tu nombre
-            'email' => 'joelortizrivas@gmail.com', // Cambia esto por tu correo
-            'password' => 'aa1234aa', // Cambia esto por tu contraseña
+            'name' => 'Joel',
+            'email' => 'joelortizrivas@gmail.com',
+            'password' => 'aa1234aa',
             'is_admin' => true,
         ]);
         $this->call(BookSeeder::class);

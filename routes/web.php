@@ -17,7 +17,7 @@ Route::get('/dashboard', [BookController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Rutas de perfil (solo usuarios autenticados)
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -26,13 +26,13 @@ Route::middleware('auth')->group(function () {
 
 
 
-Route::middleware(['auth', 'can:is_admin'])->group(function () {
+Route::middleware(['auth'])->group(function () {
+    Route::get('/books/{id}', [BookController::class, 'show'])->name('books.show');
     Route::get('/books/create', [BookController::class, 'create'])->name('books.create');
     Route::post('/books', [BookController::class, 'store'])->name('books.store');
-});
-Route::get('/books/{id}', [BookController::class, 'show'])->name('books.show');
-Route::middleware(['auth', 'can:is_admin'])->group(function () {
-    Route::resource('books', BookController::class)->except(['index', 'show']);
+    Route::get('/books/{id}/edit', [BookController::class, 'edit'])->name('books.edit');
+    Route::put('/books/{id}', [BookController::class, 'update'])->name('books.update');
+    Route::delete('/books/{id}', [BookController::class, 'destroy'])->name('books.destroy');
 });
 
 
@@ -41,18 +41,13 @@ Route::middleware(['auth', 'can:is_admin'])->group(function () {
 Route::resource('loans', LoanController::class)->middleware('auth');
 
 Route::middleware('auth')->group(function () {
-    // Rutas para préstamos
+
     Route::get('/loans', [LoanController::class, 'index'])->name('loans.index');
     Route::get('/loans/create/{bookId}', [LoanController::class, 'create'])->name('loans.create');
     Route::post('/loans', [LoanController::class, 'store'])->name('loans.store');
     Route::get('/loans/{loan}', [LoanController::class, 'show'])->name('loans.show');
     Route::delete('/loans/{loan}', [LoanController::class, 'destroy'])->name('loans.destroy');
 });
-
-
-Route::resource('reviews', ReviewController::class)->middleware('auth');
-
-require __DIR__.'/auth.php';
 
 Route::middleware(['auth'])->group(function () {
 
@@ -63,3 +58,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/reviews/{id}', [ReviewController::class, 'update'])->name('reviews.update');
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
+
+
+
+
+require __DIR__.'/auth.php';
+
+

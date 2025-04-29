@@ -1,7 +1,7 @@
 <x-app-layout>
     <section class="max-w-5xl mx-auto py-16 px-6">
         <div class="bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden flex flex-col lg:flex-row">
-            <!-- Book image -->
+
             <div class="lg:w-1/2 w-full">
                 <img
                     src="{{ $book->image_url ?? 'https://static.vecteezy.com/system/resources/previews/024/644/149/non_2x/stack-of-books-pile-of-books-isolated-on-white-background-colorful-illustration-vector.jpg' }}"
@@ -10,7 +10,7 @@
                 >
             </div>
 
-            <!-- Book details -->
+
             <div class="lg:w-1/2 w-full p-10 flex flex-col justify-between">
                 <div>
                     <h1 class="text-5xl font-bold text-zinc-900 dark:text-white mb-8 tracking-tight">
@@ -37,7 +37,7 @@
                     </div>
                 </div>
 
-                <!-- Botón de Crear Préstamo -->
+
                 <div class="mt-10 flex justify-end">
                     <a href="{{ route('loans.create', ['bookId' => $book->id]) }}"
                         class="px-6 py-3 bg-yellow-500 text-black font-semibold rounded-lg shadow-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-300">
@@ -45,16 +45,10 @@
                     </a>
                 </div>
 
-                <div class="mt-10">
-                    <a href="/dashboard"
-                       class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-md">
-                        ← Back to list
-                    </a>
-                </div>
             </div>
         </div>
 
-        <!-- Reviews Section -->
+
         <div class="mt-16">
             <h2 class="text-3xl font-semibold text-zinc-900 dark:text-white mb-6">Reviews</h2>
 
@@ -72,23 +66,28 @@
                         "{{ $review->content }}"
                     </p>
 
-                    <div class="flex justify-end gap-4">
-                        <form action="{{ route('reviews.edit', $review->id) }}" method="GET">
-                            <button type="submit" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-black text-sm font-semibold rounded-xl transition duration-300 shadow">
-                                Edit
-                            </button>
-                        </form>
+                <div class="flex justify-end gap-4">
 
-                        <form action="{{ route('reviews.destroy', $review->id) }}" method="POST"
-                              onsubmit="return confirm('Are you sure you want to delete this review?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl transition duration-300 shadow">
-                                Delete
-                            </button>
-                        </form>
-                    </div>
+                @if (Auth::check() && (Auth::user()->id === $review->user_id || Auth::user()->is_admin))
+
+                <form action="{{ route('reviews.edit', $review->id) }}" method="GET">
+                <button type="submit" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-black text-sm font-semibold rounded-xl transition duration-300 shadow">
+                    Edit
+                </button>
+                </form>
+
+                <form action="{{ route('reviews.destroy', $review->id) }}" method="POST"
+                    onsubmit="return confirm('Are you sure you want to delete this review?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl transition duration-300 shadow">
+                        Delete
+                    </button>
+                </form>
+                @endif
+            </div>
+
                 </div>
             @empty
                 <p class="text-zinc-500 dark:text-zinc-400 italic text-center mt-8">There are no reviews yet.</p>
