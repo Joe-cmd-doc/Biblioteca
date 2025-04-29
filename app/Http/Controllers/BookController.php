@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Gate;
 class BookController extends Controller
 {
     use AuthorizesRequests;
+
     public function index()
     {
         $books = Book::all();
